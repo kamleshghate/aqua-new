@@ -1,26 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { RIDE_CATEGORIES } from '@/lib/data/rides';
 import { Reveal } from '@/components/Reveal';
 
-export function CategoryNav() {
-  const [active, setActive] = useState('all');
+export function CategoryNav({ categories, active, onSelect }) {
+  const cats = categories?.length ? categories : RIDE_CATEGORIES;
+  const mobileRef = useRef(null);
+
+  // Auto-scroll active chip into view on mobile
+  useEffect(() => {
+    const container = mobileRef.current;
+    if (!container) return;
+    const activeEl = container.querySelector('[data-active="true"]');
+    if (activeEl) {
+      activeEl.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    }
+  }, [active]);
 
   return (
     <section style={{ padding: '56px 0 20px' }}>
       <div className="container-x">
-        <Reveal className="grid grid-cols-6 gap-3 max-[1180px]:grid-cols-3 max-[720px]:grid-cols-2">
-          {RIDE_CATEGORIES.map((c) => (
+        {/* Desktop: 6-col grid */}
+        <Reveal className="cat-nav-desktop">
+          {cats.map((c) => (
             <button
               key={c.key}
               type="button"
               className={`cat-btn ${active === c.key ? 'is-active' : ''}`}
-              onClick={() => setActive(c.key)}
+              onClick={() => onSelect(c.key)}
             >
               <span className="cat-emoji">{c.emoji}</span>
               <span className="cat-name">{c.name}</span>
               <span className="cat-count">{c.count}</span>
+            </button>
+          ))}
+        </Reveal>
+
+        {/* Mobile: horizontal scroll */}
+        <Reveal className="cat-nav-mobile" ref={mobileRef}>
+          {cats.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              data-active={active === c.key}
+              className={`cat-chip ${active === c.key ? 'is-active' : ''}`}
+              onClick={() => onSelect(c.key)}
+            >
+              <span className="cat-chip-emoji">{c.emoji}</span>
+              <span className="cat-chip-text">
+                <span className="cat-chip-name">{c.name}</span>
+                <span className="cat-chip-count">{c.count}</span>
+              </span>
             </button>
           ))}
         </Reveal>

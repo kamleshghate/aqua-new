@@ -1,6 +1,161 @@
-import { redirect } from 'next/navigation';
-import { DEFAULT_LOCATION } from '@/lib/locations';
+import Link from 'next/link';
+import { getAllLocations } from '@/lib/locations';
+import Image from 'next/image';
+
+const LOCATION_META = {
+  surat: {
+    tagline: 'The Heart of Surat',
+    rides: '16+ international rides',
+    highlight: 'Amazon-inspired Theme ·  Family & Thrill Rides',
+    status: 'open',
+    ctaLabel: 'Explore Surat →',
+    bookLabel: 'Book Now',
+    bookUrl: '/surat/tickets-and-offers',
+    image: '/surat-bg.jpg',
+  },
+  indore: {
+    tagline: 'MP\'s biggest water park',
+    rides: '20+ International Rides, Biggest Wavepool',
+    highlight: '6+ Multicuisine Restaurants',
+    status: 'open',
+    ctaLabel: 'Explore Indore →',
+    bookLabel: 'Book Now',
+    bookUrl: '/indore/tickets-and-offers',
+    image: '/indore-bg.jpg',
+  },
+  mehsana: {
+    tagline: 'Explore Mehsana\'s Aqua Imagicaa',
+    rides: '40+ International Rides, ',
+    highlight: 'For booking: +91 9974417666',
+    status: 'open',
+    ctaLabel: 'Explore Mehsana →',
+    bookLabel: 'Book Now',
+    bookUrl: '/mehsana/tickets-and-offers',
+    image: "https://www.shankuswaterpark.com/wp-content/uploads/2024/05/waterpark.jpg",
+  },
+};
+
+const TEXT_SHADOW =
+  '0 0 2px rgba(6,58,76,0.9), 0 1px 4px rgba(6,58,76,0.85), 0 2px 12px rgba(6,58,76,0.7)';
+
+const CARD_TEXT = {
+  city: { color: '#fff', fontWeight: 800, textShadow: TEXT_SHADOW },
+  state: { color: '#FCD55B', fontWeight: 600, textShadow: TEXT_SHADOW },
+  tagline: { color: '#fff', fontWeight: 600, textShadow: TEXT_SHADOW },
+  stats: { color: '#fff', fontWeight: 500, textShadow: TEXT_SHADOW },
+};
+
+const BOOK_BTN_STYLE = {
+  background: 'rgba(255,255,255,0.2)',
+  color: '#fff',
+  border: '1.5px solid #fff',
+  backdropFilter: 'blur(6px)',
+  WebkitBackdropFilter: 'blur(6px)',
+  textShadow: '0 1px 4px rgba(6,58,76,0.8)',
+};
+
+export const metadata = {
+  title: 'Aqua Imagicaa — India\'s Most Loved Water Park Experience',
+  description: 'Choose your Aqua Imagicaa location — Surat, Indore, or mehsana. World-class water slides, wave pools, and family fun.',
+};
 
 export default function RootPage() {
-  redirect(`/${DEFAULT_LOCATION}`);
+  const locations = getAllLocations();
+
+  return (
+    <div className="lp-shell">
+      <div className="lp-bg" aria-hidden="true">
+        <div className="lp-wave lp-wave-1" />
+        <div className="lp-wave lp-wave-2" />
+        <div className="lp-wave lp-wave-3" />
+      </div>
+
+      <div className="lp-inner">
+        <header className="lp-header">
+          <div className="lp-logo" aria-hidden="true" >
+            <Image height={400} width={200} src="/Aquamagicaa-logo.png" alt="logo" />
+          </div>
+
+          <p className="lp-subtitle">India&apos;s Most Loved Water Park Experience</p>
+        </header>
+
+        <div className="lp-prompt">
+          <span className="lp-prompt-icon">📍</span>
+          <span>Choose your park location</span>
+        </div>
+
+        <div className="lp-grid">
+          {locations.map((loc) => {
+            const meta = LOCATION_META[loc.slug] || {};
+            const isOpen = meta.status === 'open';
+
+            return (
+              // <div key={loc.slug} className={`lp-card ${!isOpen ? 'lp-card-soon' : ''}`}>
+              <div key={loc.slug} className={`lp-card `}>
+                {/* Full background image */}
+                <div className="lp-card-bg">
+                  {meta.image ? (
+                    <Image height={200} width={400} src={meta.image} alt={loc.displayName} />
+                  ) : (
+                    <div
+                      className="lp-card-bg-placeholder"
+                      style={{ background: 'linear-gradient(135deg, #0E7A93, #00A5C8)' }}
+                    >
+                      🚧
+                    </div>
+                  )}
+                </div>
+
+                {/* Dark gradient overlay */}
+                <div className="lp-card-overlay" />
+
+                {/* Content pinned to bottom */}
+                <div className="lp-card-content">
+                  <h2 className="lp-card-city">{loc.name}</h2>
+                  <p className="lp-card-state">{loc.state}</p>
+                  <p className="lp-card-tagline">{meta.tagline}</p>
+
+                  <div className="lp-card-stats">
+                    <span>{meta.rides}</span>
+                    <span className="lp-dot">·</span>
+                    <span>{meta.highlight}</span>
+                  </div>
+
+                  {/* {isOpen ? ( */}
+                  <div className="lp-card-actions">
+                    <Link href={`/${loc.slug}`} className="lp-btn-primary">
+                      {meta.ctaLabel}
+                    </Link>
+                    {meta.bookLabel && (
+                      <Link
+                        href={meta.bookUrl}
+                        className="lp-btn-secondary hover:!bg-white hover:!text-[#0E7A93]"
+                        style={BOOK_BTN_STYLE}
+                      >
+                        {meta.bookLabel}
+                      </Link>
+                    )}
+                  </div>
+                  {/* ) : ( */}
+                  {/* <div className="lp-card-actions">
+                      <span className="lp-badge-soon">Explore Mehsana</span>
+                    </div>
+                  )} */}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <footer className="lp-footer">
+          <div className="lp-footer-links">
+            <Link href="/surat/contact-us">Contact Us</Link>
+            <Link href="/surat/about">About</Link>
+            <a href="https://www.instagram.com/aquaimagicaa/" target="_blank" rel="noopener noreferrer">Instagram</a>
+          </div>
+          <p className="lp-copyright">© 2026 Aqua Imagicaa · Imagicaaworld Entertainment Ltd.</p>
+        </footer>
+      </div>
+    </div>
+  );
 }

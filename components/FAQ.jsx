@@ -1,21 +1,43 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Reveal } from './Reveal';
 import { FAQS } from '@/lib/data/home';
 
 const TABS = [
+
   { key: 'all', label: 'All' },
   { key: 'park', label: 'Park' },
   { key: 'safety', label: 'Rules & Safety' },
   { key: 'rides', label: 'Rides' },
+  { key: 'tickets', label: 'Tickets' },
+  { key: 'food', label: 'Food & Restaurants' },
+  { key: 'dress', label: 'Dressing & Retail' },
+  { key: 'service', label: 'Service Facility FAQs' },
 ];
 
-export function FAQ() {
-  const [cat, setCat] = useState('all');
-  const [openIdx, setOpenIdx] = useState(1); // second item open by default per design
+export function FAQ({ data, showTabs = true, maxItems = 5 }) {
+  const eyebrow = data?.eyebrow || 'Still curious?';
+  const heading = data?.heading || 'Frequently asked questions.';
+  const faqs = data?.faqs?.length ? data.faqs : FAQS;
 
-  const filtered = cat === 'all' ? FAQS : FAQS.filter((f) => f.cat === cat);
+  const availableCats = new Set(faqs.map((f) => f.cat));
+  const tabs = TABS.filter((tab) => tab.key === 'all' || availableCats.has(tab.key));
+
+  const [cat, setCat] = useState('all');
+  const [openIdx, setOpenIdx] = useState(1);
+
+  const params = useParams();
+  const location = params?.location;
+
+  const filtered = !showTabs || cat === 'all' ? faqs : faqs.filter((f) => f.cat === cat);
+
+  // Limit how many FAQs are shown (pass maxItems={null} to show all)
+  const hasLimit = typeof maxItems === 'number' && maxItems > 0;
+  const visibleFaqs = hasLimit ? filtered.slice(0, maxItems) : filtered;
+  const hasMore = hasLimit && filtered.length > maxItems;
 
   return (
     <section className="section-shell section-tight">
@@ -23,31 +45,29 @@ export function FAQ() {
         <Reveal>
           <div className="faq-wrap">
             <div className="grid grid-cols-[1fr_1.3fr] gap-12 max-[720px]:grid-cols-1 max-[720px]:gap-6">
-              {/* Left — heading */}
               <div>
-                <span className="eyebrow" style={{ color: 'var(--brand-900)' }}>Still curious?</span>
-                <h2 className="h1 mt-3.5">
-                  Frequently asked<br />questions.
-                </h2>
+                <span className="eyebrow" style={{ color: 'var(--brand-900)' }}>{eyebrow}</span>
+                <h2 className="h1 mt-3.5" style={{ whiteSpace: 'pre-line' }}>{heading}</h2>
                 <span className="underline-deco" style={{ background: 'var(--brand-600)' }} />
               </div>
 
-              {/* Right — tabs + accordion */}
               <div>
-                <div className="flex gap-2 mb-4 flex-wrap">
-                  {TABS.map((tab) => (
-                    <button
-                      key={tab.key}
-                      type="button"
-                      className={`faq-tab ${cat === tab.key ? 'is-active' : ''}`}
-                      onClick={() => { setCat(tab.key); setOpenIdx(-1); }}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
+                {showTabs && (
+                  <div className="flex gap-2 mb-4 flex-wrap">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        className={`faq-tab ${cat === tab.key ? 'is-active' : ''}`}
+                        onClick={() => { setCat(tab.key); setOpenIdx(-1); }}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-                {filtered.map((faq, i) => {
+                {visibleFaqs.map((faq, i) => {
                   const isOpen = openIdx === i;
                   return (
                     <div key={faq.q} className="faq-item">
@@ -66,6 +86,12 @@ export function FAQ() {
                     </div>
                   );
                 })}
+
+                {location && hasMore && (
+                  <Link href={`/${location}/faq-help`} className="faq-view-more">
+                    View More
+                  </Link>
+                )}
               </div>
             </div>
           </div>
