@@ -227,6 +227,7 @@ export default async function HappierBirthdayPage({ params }) {
                 </section>
             )}
 
+
             {/* Closing CTA */}
             {cta && (
                 <section className="section-shell">
