@@ -258,6 +258,7 @@ export default async function CorporateOutingsPage({ params }) {
 
     // Strapi first, section by section; static content only fills the gaps.
     const fromStrapi = extractCorporateOutings(page);
+    
     const fallback = getCorporateOutingsData(location.slug) || {};
     // Field by field: an empty Strapi field never wipes out the static text
     const isEmpty = (v) => v == null || v === '' || (Array.isArray(v) && v.length === 0);
@@ -286,9 +287,9 @@ export default async function CorporateOutingsPage({ params }) {
     const cta = fallback.cta;
 
     if (!page && !fallback.hero) notFound();
-
+    
     const base = `/${location.slug}`;
-    const primaryCta = hero?.primaryCta?.label ? hero.primaryCta : DEFAULT_PRIMARY_CTA;
+    const primaryCta = hero.primaryCta || DEFAULT_PRIMARY_CTA;
 
     // Images: Strapi / data file first, then the IMAGES list above
     const heroDesktop = hero?.bgImage || IMAGES.hero.desktop;
