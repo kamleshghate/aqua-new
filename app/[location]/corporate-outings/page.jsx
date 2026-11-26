@@ -42,7 +42,7 @@ function resolveHref(url, base) {
     return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
 }
 
-const DEFAULT_PRIMARY_CTA = { label: 'Plan your corporate outing →', href: '#enquire-popup' };
+const DEFAULT_PRIMARY_CTA = { label: 'Submit Enquiry', href: '#enquire-popup' };
 
 /* ═════════════════════════════════════════════════════════════════════════════
    IMAGES — put all photos in:  public/images/corporate/
