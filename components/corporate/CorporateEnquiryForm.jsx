@@ -29,7 +29,7 @@ export function CorporateEnquiryForm({
     locationName,
     outingTypes = [],
     banquetOptions = ['Yes', 'No'],
-    submitLabel = 'Request a corporate quote',
+    submitLabel = 'Submit Form',
     privacyNote = '',
     successHeading = 'Thanks, we have your enquiry.',
     successBody = 'Our team will get back to you shortly.',
